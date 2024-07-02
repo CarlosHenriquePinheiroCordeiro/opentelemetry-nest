@@ -12,14 +12,14 @@ import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions'
 import { JaegerExporter } from '@opentelemetry/exporter-jaeger';
 
 const jaegerExporter = new JaegerExporter({
-    endpoint: 'http://localhost:14268/api/traces',
+    endpoint: 'http://jaeger:14268/api/traces',
 })
 
 const traceExporter = jaegerExporter;
 
 export const otelSDK = new NodeSDK({
     resource: new Resource({
-        [SemanticResourceAttributes.SERVICE_NAME]: `nestjs-otel`, // update this to a more relevant name for you!
+        [SemanticResourceAttributes.SERVICE_NAME]: `nestjs-otel`,
       }),
     spanProcessor: new SimpleSpanProcessor(traceExporter),
     instrumentations: [
@@ -33,8 +33,8 @@ process.on('SIGTERM', () => {
         otelSDK
         .shutdown()
         .then(
-            () => console.log('SDK shut down successfully'),
-            (err) => console.log('Error shutting down SDK', err),
+            () => console.log('SDK desligada, sucesso'),
+            (err) => console.log('Erro no Jaeger', err),
         )
         .finally(() => process.exit(0));
     }

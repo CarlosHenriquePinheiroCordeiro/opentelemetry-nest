@@ -1,18 +1,23 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors } from '@nestjs/common';
 import { CustomerService } from './customer.service';
 import { CreateCustomerDto } from './dto/create-customer.dto';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
+import { CacheInterceptor, CacheKey, CacheTTL } from '@nestjs/cache-manager';
 
 @Controller('customer')
+@UseInterceptors(CacheInterceptor)
 export class CustomerController {
-  constructor(private readonly customerService: CustomerService) {}
+  constructor(private customerService: CustomerService) {}
 
   @Post()
-  create(@Body() createCustomerDto: CreateCustomerDto) {
-    return this.customerService.create(createCustomerDto);
+  async create(@Body() createCustomerDto: CreateCustomerDto) {
+    const response = await this.customerService.create(createCustomerDto);
+    return response;
   }
 
   @Get()
+  @CacheKey('customer')
+  @CacheTTL(3)
   findAll() {
     return this.customerService.findAll();
   }
